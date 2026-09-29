@@ -57,7 +57,7 @@
         <x-badge status="Menipis" />
         <x-badge status="Habis" />
     </div>
-</div>>
+</div>
             </div>
         </div>
     </main>
