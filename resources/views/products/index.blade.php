@@ -1,54 +1,60 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Daftar Produk</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Semua Produk</h3>
-                    <a href="{{ route('products.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-md transition">
-                        + Tambah Produk
-                    </a>
-                </div>
-
-                <table class="w-full text-sm text-left">
-                    <thead>
-                        <tr class="border-b bg-gray-50">
-                            <th class="py-2 px-3">Kode</th>
-                            <th class="py-2 px-3">Nama Produk</th>
-                            <th class="py-2 px-3">Kategori</th>
-                            <th class="py-2 px-3">Harga</th>
-                            <th class="py-2 px-3">Stok</th>
-                            <th class="py-2 px-3">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($products as $product)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-2 px-3 font-mono text-xs">{{ $product->code }}</td>
-                                <td class="py-2 px-3 font-medium">{{ $product->name }}</td>
-                                <td class="py-2 px-3 text-gray-600">{{ $product->category->name ?? '-' }}</td>
-                                <td class="py-2 px-3">{{ $product->formatted_price }}</td>
-                                <td class="py-2 px-3">{{ $product->stock }}</td>
-                                <td class="py-2 px-3 flex gap-2">
-                                    <a href="{{ route('products.edit', $product->id) }}" class="text-blue-600 hover:underline text-xs">Edit</a>
-                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline text-xs">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="py-4 text-center text-gray-500">Belum ada data produk.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+@section('content')
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Daftar Produk</h2>
+        <a href="{{ route('products.create') }}" class="btn btn-primary">Tambah Produk</a>
     </div>
-</x-app-layout>
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Gambar</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Stok</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($products as $product)
+                <tr>
+                    <td>
+                        @if ($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="60" class="img-thumbnail">
+                        @else
+                            <span class="badge bg-secondary">Tidak ada gambar</span>
+                        @endif
+                    </td>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->category->name ?? 'Tanpa Kategori' }}</td>
+                    <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                    <td>{{ $product->stock }}</td>
+                    <td>
+                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center">Belum ada data produk.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    {{ $products->links() }}
+</div>
+@endsection

@@ -6,12 +6,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
-use App\Models\Product; // Import Model Product agar bisa mengambil data dari Database
+use App\Models\Product;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Route Guest (Belum Login)
 Route::get('/login', [LoginController::class, 'create'])
     ->middleware('guest')
     ->name('login');
@@ -24,29 +25,22 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'role:admin,kasir'])
-    ->name('dashboard');
-
-// Rute khusus role Admin
+// Route khusus Role Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
     Route::get('/reports/sales', [ReportController::class, 'sales'])->name('report.sales');
 });
 
-// Rute untuk role Admin & Kasir
+// Route untuk Role Admin & Kasir
 Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/badge', function () {
-        // Mengambil semua data produk beserta relasi kategorinya dari database
         $products = Product::with('category')->get();
-
-        // Mengirimkan variabel $products ke view badge.blade.php
         return view('badge', compact('products'));
     })->name('badge');
 
-    // Rute Riwayat Transaksi 
     Route::get('/pos/history', function () {
         return 'Halaman Riwayat Transaksi Saya';
     })->name('pos.history');

@@ -2,28 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Product extends Model
 {
-    protected $fillable = ['category_id', 'code', 'name', 'unit', 'price', 'stock'];
+    use HasFactory;
+
+    protected $fillable = [
+        'code',
+        'category_id',
+        'name',
+        'price',
+        'stock',
+        'unit',
+        'image',
+    ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function transactionDetails()
-    {
-        return $this->hasMany(TransactionDetail::class);
-    }
-
-    //ACCESSOR
-    protected function formattedPrice(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => 'Rp ' . number_format($this->price, 0, ',', '.')
-        );
     }
 }
