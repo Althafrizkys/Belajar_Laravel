@@ -9,9 +9,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Mengambil produk dari database MySQL
-        $products = Product::all(); 
-        
-        return view('dashboard', compact('products'));
+        // Menghitung angka ringkasan
+        $stokAman = Product::where('stock', '>', 5)->count();
+        $stokMenipis = Product::where('stock', '>', 0)->where('stock', '<=', 5)->count();
+        $stokHabis = Product::where('stock', '<=', 0)->count();
+        $totalProduk = Product::count();
+
+        // Mengambil daftar produk yang stoknya menipis (1-5) atau habis (0)
+        $produkPeringatan = Product::with('category')
+            ->where('stock', '<=', 5)
+            ->orderBy('stock', 'asc')
+            ->get();
+
+        return view('dashboard', compact(
+            'stokAman', 
+            'stokMenipis', 
+            'stokHabis', 
+            'totalProduk',
+            'produkPeringatan'
+        ));
     }
 }

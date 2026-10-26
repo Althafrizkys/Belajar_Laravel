@@ -1,55 +1,62 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Daftar Kategori</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Pesan Notifikasi Flash Data -->
-            @if (session('success'))
-                <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200" role="alert">
-                    {{ session('success') }}
-                </div>
-            @endif
+@section('content')
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Master Data Kategori</h5>
+            <a href="{{ route('categories.create') }}" class="btn btn-primary px-3">+ Tambah Kategori</a>
+        </div>
 
-            <x-card>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Master Data Kategori</h3>
-                    <a href="{{ route('categories.create') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-md transition">
-                        + Tambah Kategori
-                    </a>
-                </div>
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-                <table class="w-full text-sm text-left">
-                    <thead>
-                        <tr class="border-b bg-gray-50">
-                            <th class="py-2 px-3">No</th>
-                            <th class="py-2 px-3">Nama Kategori</th>
-                            <th class="py-2 px-3">Deskripsi</th>
-                            <th class="py-2 px-3">Dibuat Pada</th>
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>Nama Kategori</th>
+                        <th>Deskripsi</th>
+                        <th>Dibuat Pada</th>
+                        <th style="width: 150px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($categories as $index => $category)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td class="fw-bold">{{ $category->name }}</td>
+                            <td class="text-muted">{{ $category->description ?? '-' }}</td>
+                            <td class="text-muted">{{ $category->created_at ? $category->created_at->format('d M Y') : '-' }}</td>
+                            <td>
+                                <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-link text-primary p-0 me-2 text-decoration-none">Ubah</a>
+                                <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus kategori {{ $category->name }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0 text-decoration-none">Hapus</button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($categories as $index => $category)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-2 px-3">{{ $categories->firstItem() + $index }}</td>
-                                <td class="py-2 px-3 font-medium">{{ $category->name }}</td>
-                                <td class="py-2 px-3 text-gray-600">{{ $category->description ?? '-' }}</td>
-                                <td class="py-2 px-3 text-xs text-gray-500">{{ $category->created_at->format('d M Y') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-4 text-center text-gray-500">Belum ada data kategori.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
-                <!-- Pagination Links -->
-                <div class="mt-4">
-                    {{ $categories->links() }}
-                </div>
-            </x-card>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-3 text-muted">Belum ada data kategori.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

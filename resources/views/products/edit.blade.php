@@ -2,11 +2,19 @@
 
 @section('content')
 <div class="container py-4">
-    <h2>Edit Produk</h2>
+    <h2>Edit Data Produk</h2>
 
-    <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+    <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" class="mt-3">
         @csrf
         @method('PUT')
+
+        <div class="mb-3">
+            <label for="code" class="form-label">Kode Produk</label>
+            <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $product->code) }}">
+            @error('code')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
         <div class="mb-3">
             <label for="name" class="form-label">Nama Produk</label>
@@ -21,7 +29,7 @@
             <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror">
                 <option value="">-- Pilih Kategori --</option>
                 @foreach ($categories as $category)
-                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                    <option value="{{ $category->id }}" @selected(old('category_id', $product->category_id) == $category->id)>
                         {{ $category->name }}
                     </option>
                 @endforeach
@@ -31,27 +39,37 @@
             @enderror
         </div>
 
-        <div class="mb-3">
-            <label for="price" class="form-label">Harga (Rp)</label>
-            <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}">
-            @error('price')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="price" class="form-label">Harga (Rp)</label>
+                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}">
+                @error('price')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label for="stock" class="form-label">Stok</label>
+                <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}">
+                @error('stock')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label for="unit" class="form-label">Satuan Unit</label>
+                <input type="text" name="unit" id="unit" class="form-control @error('unit') is-invalid @enderror" value="{{ old('unit', $product->unit) }}">
+                @error('unit')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
-            <label for="stock" class="form-label">Stok</label>
-            <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}">
-            @error('stock')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="image" class="form-label">Gambar Produk (Biarkan kosong jika tidak diganti)</label>
+            <label for="image" class="form-label">Gambar Produk (Opsional)</label>
             @if ($product->image)
                 <div class="mb-2">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="120" class="img-thumbnail">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="100" class="img-thumbnail">
                 </div>
             @endif
             <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror">
@@ -60,7 +78,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary">Perbarui Produk</button>
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         <a href="{{ route('products.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
