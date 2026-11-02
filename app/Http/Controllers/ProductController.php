@@ -104,4 +104,22 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
+
+    public function show(Product $product)
+{
+    // Lazy Eager Loading untuk memuat relasi bertingkat: transactionDetails -> transaction
+    $product->load(['category', 'transactionDetails.transaction']);
+
+    // Agregasi jumlah unit terjual (dihitung dari collection memori)
+    $totalTerjual = $product->transactionDetails->sum('qty');
+
+    // Query builder terpisah untuk mengambil 10 riwayat transaksi penjualan terakhir
+    $riwayat = $product->transactionDetails()
+        ->with('transaction')
+        ->latest()
+        ->take(10)
+        ->get();
+
+    return view('products.show', compact('product', 'totalTerjual', 'riwayat'));
+}
 }

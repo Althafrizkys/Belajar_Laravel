@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PosController; // <-- TAMBAHKAN BARIS INI (Fix PosController Merah)
 use App\Models\Product;
 
 Route::get('/', function () {
@@ -41,7 +42,9 @@ Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
         return view('badge', compact('products'));
     })->name('badge');
 
-    Route::get('/pos/history', function () {
-        return 'Halaman Riwayat Transaksi Saya';
-    })->name('pos.history');
+    // Rute POS (Point of Sale) - Pertemuan 12
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+    Route::post('/pos', [PosController::class, 'store'])->name('pos.store');
+    Route::get('/pos/history', [PosController::class, 'history'])->name('pos.history');
+    Route::get('/pos/{transaction}/struk', [PosController::class, 'struk'])->name('pos.struk');
 });

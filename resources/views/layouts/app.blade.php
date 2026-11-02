@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POS Barokah Mart</title>
+    
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -26,6 +30,9 @@
         .nav-link-custom:hover, .nav-link-custom.active {
             color: #2563eb;
             background-color: #eff6ff;
+        }
+        .dropdown-menu {
+            border-radius: 0.5rem;
         }
     </style>
 </head>
@@ -58,9 +65,26 @@
                         </li>
                     @endif
 
-                    <li class="nav-item">
-                        <a class="nav-link-custom {{ request()->routeIs('pos.*') ? 'active' : '' }}" 
-                           href="{{ route('pos.history') }}">Transaksi</a>
+                    <!-- Menu Dropdown Transaksi (Admin & Kasir) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-custom dropdown-toggle {{ request()->routeIs('pos.*') ? 'active' : '' }}" 
+                           href="#" id="navbarDropdownPOS" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Transaksi
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="navbarDropdownPOS">
+                            <li>
+                                <a class="dropdown-item py-2 {{ request()->routeIs('pos.index') ? 'active' : '' }}" 
+                                   href="{{ route('pos.index') }}">
+                                    🛒 Layar Kasir (POS)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 {{ request()->routeIs('pos.history') ? 'active' : '' }}" 
+                                   href="{{ route('pos.history') }}">
+                                    📜 Riwayat Transaksi
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
 
